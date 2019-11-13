@@ -1,0 +1,33 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1573649201403.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "7EF96079",
+    "lastKnownWriteTime" : 4482040606250397545,
+    "last_content_update" : 1573649201403,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "25EFEF59",
+        "caption" : "DataSurveyIncomplete",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=DataSurveyIncomplete&cache_key=25EFEF59",
+        "displayedObservations" : 5000,
+        "environment" : "",
+        "expression" : "DataSurveyIncomplete",
+        "object" : "DataSurveyIncomplete",
+        "preview" : 0,
+        "totalObservations" : 5000,
+        "variables" : 7
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}
