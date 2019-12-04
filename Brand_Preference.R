@@ -14,6 +14,14 @@ Dataset$zipcode<- as.factor(Dataset$zipcode)
 str(Dataset)
 Dataset$brand<- as.factor(Dataset$brand)
 
+
+Dataset$brand_name <- apply(Dataset["brand"],
+                                     
+                                     MARGIN = 2,
+                                     
+                                     function(x) if_else(x == 0, "Acer", "Sony"))
+
+
 #create ranges for age and salary ####
 salarycat<- Dataset$salary
 salarycat<- cut(salarycat,5)
@@ -55,13 +63,17 @@ ggplot(Dataset, aes(x = car, y = zipcode))+
   geom_point(position = "jitter") +
   facet_wrap("brand")
 
+ggplot(Dataset, aes(x = brand, y = salary)) + 
+  geom_boxplot()
+
 #Create bar graph ####
 
 library (gcookbook)
+
 Dataset %>%
   group_by(brand) %>%
-  summarize(mean_salary = mean(salary, na.rm = TRUE) -> dataset2
-
+  summarize(mean_salary = mean(salary, na.rm = TRUE)) -> dataset2
+            
 Dataset %>%
   group_by(brand) %>%
   summarize(mean_credit = mean(credit, na.rm = TRUE)) -> dataset3
@@ -102,10 +114,15 @@ ggplot(age, aes(x = age)) +
 ggplot(Dataset, aes(x = agecat)) +
   geom_bar()
 
-# Create histogram
+# Create histogram ####
 hist(Dataset$salary)
 hist(Dataset$age)
 hist(Dataset$credit)
+hist(Dataset$zipcode)
+hist(Dataset$credit)
+hist(Dataset$brand)
+hist(Dataset$elevel)
+hist(Dataset$brand)
 
 ggplot(Dataset, aes(x = salary)) +
   geom_histogram(binwidth = 20000, fill = "white", colour = "black")
@@ -116,6 +133,7 @@ ggplot(Dataset, aes(x = age)) +
 ggplot(Dataset, aes(x = credit)) +
   geom_histogram(binwidth = 50000, fill = "white", colour = "black")
 
+summary(Dataset)
 
 # Train C5.0 model ####
 str(Dataset)
@@ -146,8 +164,10 @@ modelLookup("C5.0")
 predictions <- predict(object = C5.0Fit, newdata = testing)
 testing$pred <- predictions
 head(testing)
+
 # metrics
-postResample(pred = predictions, obs = testing$brand)
+PostResample(pred = predictions, obs = testing$brand)
+
 # Train RF model ####
 library(randomForest)
 ctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 1) 
@@ -164,6 +184,24 @@ RFFit
 predictions <- predict(object = RFFit, newdata = testing)
 testing$pred <- predictions
 head(testing)
+
+testing$brand_name_pred. <- apply(testing["pred"],
+                            
+                            MARGIN = 2,
+                            
+                            function(x) if_else(x == 0, "Acer", "Sony"))
+
+RF_Plot<- testing %>% ggplot(aes(x = age, y = salary)) +
+  
+  geom_point(aes(color = testing$brand_name_pred.)) +
+  
+  labs(title = "RF model with predictors Age and Salary") +
+  
+  scale_color_manual(values = c("royalblue4", "red")) +
+  
+  theme(element_blank())
+
+RF_Plot
 # metrics
 postResample(pred = predictions, obs = testing$brand)
 
@@ -179,13 +217,17 @@ knnFit <- train(brand ~ .,
 
 knnFit
 
-# check errors on testing RF
+# check errors on testing knnFit
 predictions <- predict(object = knnFit, newdata = testing)
 testing$pred <- predictions
 head(testing)
 # metrics
 postResample(pred = predictions, obs = testing$brand)
                  
+
+
+
+
 # Train svm model####
 install.packages("e1071")
 library("e1071")
@@ -202,7 +244,7 @@ SvmFit <- train(brand ~ .,
 
 SvmFit
 
-# check errors on testing RF
+# check errors on testing SvmFit
 predictions <- predict(object = SvmFit, newdata = testing)
 testing$pred <- predictions
 head(testing)
@@ -212,8 +254,11 @@ postResample(pred = predictions, obs = testing$brand)
 C5.0Imp<- varImp(C5.0Fit, scale = FALSE)
 C5.0Imp
 
-RFFitImp<- varImp(RFFit, scale = FALSE)
+RFFitImp<- varImp(RFFit, scale = TRUE)
 RFFitImp
+plot(RFFitImp, top = 10)
+varImp
+
 
 #Plot training model####
 plot(C5.0Fit)
@@ -226,12 +271,23 @@ str(Dataset)
 is.na(Dataset)
 
 # Change datatypes for prediction model####
-DataSurveyIncomplete<- read.csv("SurveyIncomplete.csv")
+DataInc<- read.csv("SurveyIncomplete.csv")
 attributes(DataSurveyIncomplete)
 str(DataSurveyIncomplete)
 is.na(DataSurveyIncomplete)
-DataSurveyIncomplete$elevel<- as.ordered(DataSurveyIncomplete$elevel)
-DataSurveyIncomplete$car<- as.factor(DataSurveyIncomplete$car)
-DataSurveyIncomplete$zipcode<- as.factor(DataSurveyIncomplete$zipcode)
-DataSurveyIncomplete$brand<- as.factor(DataSurveyIncomplete$brand)
+DataInc$elevel<- as.ordered(DataInc$elevel)
+DataInc$car<- as.factor(DataInc$car)
+DataInc$zipcode<- as.factor(DataInc$zipcode)
+DataInc$brand<- as.factor(DataInc$brand)
+summary(DataInc)
 
+predictions <- predict(object = RFFit, newdata = DataInc)
+DataInc$brand <- predictions
+head(DataInc)
+
+# metrics
+# postResample(pred = predictions, obs = DataInc$brand)
+
+summary(Dataset)
+
+rbind()
